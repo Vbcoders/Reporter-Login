@@ -280,35 +280,48 @@
   });
 
   // Fetch Published or Unpublished News
-  async function fetchNews() {
-    const newsList = document.getElementById('news-list');
-    newsList.innerHTML = '';
-    const snapshot = await db.ref('news').orderByChild('published').equalTo(showUnpublished ? false : true).once('value');
-    snapshot.forEach(childSnapshot => {
-      const data = childSnapshot.val();
-      const newsId = childSnapshot.key;
-      newsList.innerHTML += `
-        <div class="news-item">
-          <img src="${data.imageUrl}" alt="${data.title}">
-          <div class="content">
-            <h3>${data.title}</h3>
-            <p>${data.content}...</p>
-            <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
-            <div class="reporter-info">
-              <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-              <span>by ${data.reporterName}</span>
-            </div>
-            ${
-              showUnpublished
-                ? `<button onclick="publishNews('${newsId}')">Publish</button>
-                   <button onclick="rejectNews('${newsId}')">Reject</button>`
-                : `<button onclick="removeNews('${newsId}')">Remove</button>`
-            }
+// Fetch Published or Unpublished News
+async function fetchNews() {
+  const newsList = document.getElementById('news-list');
+  newsList.innerHTML = '';
+
+  // Fetch news and filter out rejected news
+  const snapshot = await db.ref('news')
+    .orderByChild('published')
+    .equalTo(showUnpublished ? false : true)
+    .once('value');
+
+  snapshot.forEach(childSnapshot => {
+    const data = childSnapshot.val();
+    const newsId = childSnapshot.key;
+
+    // Skip rejected news
+    if (data.rejected) {
+      return;  // Skip adding this news to the list
+    }
+
+    newsList.innerHTML += `
+      <div class="news-item">
+        <img src="${data.imageUrl}" alt="${data.title}">
+        <div class="content">
+          <h3>${data.title}</h3>
+          <p>${data.content}...</p>
+          <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
+          <div class="reporter-info">
+            <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+            <span>by ${data.reporterName}</span>
           </div>
+          ${
+            showUnpublished
+              ? `<button onclick="publishNews('${newsId}')">Publish</button>
+                 <button onclick="rejectNews('${newsId}')">Reject</button>`
+              : `<button onclick="removeNews('${newsId}')">Remove</button>`
+          }
         </div>
-      `;
-    });
-  }
+      </div>
+    `;
+  });
+}
 
   // Handle News Submission
   document.getElementById('newsForm').addEventListener('submit', async (e) => {
@@ -364,15 +377,20 @@
   }
 
   // Reject News (mark as rejected and remove from Firebase)
-  async function rejectNews(newsId) {
-    const newsRef = db.ref(`news/${newsId}`);
+  // Reject News (mark as rejected without removing from Firebase)
+async function rejectNews(newsId) {
+  const newsRef = db.ref(`news/${newsId}`);
 
-    // Remove the rejected news from Firebase
-    await newsRef.remove();
-
-    alert('News has been rejected and removed!');
-    fetchNews();  // Refresh the news list
-  }
+  // Mark the news as rejected and unpublished
+  await newsRef.update({
+    rejected: true,
+    published: false,
+    updated_at: firebase.database.ServerValue.TIMESTAMP,
+  });
+  
+  alert('News has been rejected!');
+  fetchNews();  // Refresh the news list
+}
 
   // Remove News (Remove published news)
   async function removeNews(newsId) {

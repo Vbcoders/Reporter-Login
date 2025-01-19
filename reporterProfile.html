@@ -102,31 +102,29 @@
       }
     });
 
-  function getUserNewsStats(userId) {
+ function getUserNewsStats(userId) {
   db.ref('news')
-    .orderByChild('reporterName')  // Sort by reporterName field
-    .equalTo(userId)  // Match the current user's ID
+    .orderByChild('reporterName')
+    .equalTo(user.displayName)  // Ensure this is the actual UID of the current user
     .once('value', (snapshot) => {
-      let publishedCount = 0;
-      let rejectedCount = 0;
-
       if (snapshot.exists()) {
+        console.log('Data fetched for user:', snapshot.val()); // Log the entire fetched data
+        let publishedCount = 0;
+        let rejectedCount = 0;
+
         snapshot.forEach(childSnapshot => {
           const newsData = childSnapshot.val();
-          console.log('News Data:', newsData);  // Debug: log each news item
+          console.log('News Data:', newsData); // Log each individual news item
 
-          // Check if the news is published and not rejected
           if (newsData.published && !newsData.rejected) {
             publishedCount++;
           }
-          // Check if the news is rejected
           if (newsData.rejected) {
             rejectedCount++;
           }
         });
 
-        // Display the counts on the profile page
-        console.log(`Published: ${publishedCount}, Rejected: ${rejectedCount}`); // Debug the counts
+        console.log(`Published: ${publishedCount}, Rejected: ${rejectedCount}`);  // Log the counts
         document.getElementById('publishedNewsCount').textContent = `Published News: ${publishedCount}`;
         document.getElementById('rejectedNewsCount').textContent = `Rejected News: ${rejectedCount}`;
       } else {
@@ -134,7 +132,6 @@
       }
     });
 }
-
     // Log out
     function signOut() {
       auth.signOut().then(() => {

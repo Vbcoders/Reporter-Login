@@ -6,6 +6,7 @@
   <title>User Profile</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,6 +46,11 @@
       cursor: pointer;
       margin-top: 20px;
     }
+    .news-stats {
+      font-size: 18px;
+      margin: 10px 0;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -53,6 +59,12 @@
     <img id="userPhoto" src="" alt="User Photo">
     <p id="userName">Name: </p>
     <p id="userEmail">Email: </p>
+
+    <div class="news-stats">
+      <p id="publishedNewsCount">Published News: 0</p>
+      <p id="rejectedNewsCount">Rejected News: 0</p>
+    </div>
+
     <button class="logout-btn" onclick="signOut()">Log Out</button>
   </div>
 
@@ -72,6 +84,7 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database();
 
     // Get current user
     auth.onAuthStateChanged(user => {
@@ -80,11 +93,39 @@
         document.getElementById('userPhoto').src = user.photoURL;
         document.getElementById('userName').textContent = 'Name: ' + user.displayName;
         document.getElementById('userEmail').textContent = 'Email: ' + user.email;
+
+        // Fetch and display news statistics
+        getUserNewsStats(user.uid);
       } else {
         // Redirect to login if not signed in
         window.location.href = 'login_page.html'; // Change to your login page
       }
     });
+
+    // Fetch and count published and rejected news for the current user
+    function getUserNewsStats(userId) {
+      db.ref('news')
+        .orderByChild('reporterName')
+        .equalTo(userId)
+        .once('value', (snapshot) => {
+          let publishedCount = 0;
+          let rejectedCount = 0;
+
+          snapshot.forEach(childSnapshot => {
+            const newsData = childSnapshot.val();
+            if (newsData.published && !newsData.rejected) {
+              publishedCount++;
+            }
+            if (newsData.rejected) {
+              rejectedCount++;
+            }
+          });
+
+          // Display the counts on the profile page
+          document.getElementById('publishedNewsCount').textContent = `Published News: ${publishedCount}`;
+          document.getElementById('rejectedNewsCount').textContent = `Rejected News: ${rejectedCount}`;
+        });
+    }
 
     // Log out
     function signOut() {

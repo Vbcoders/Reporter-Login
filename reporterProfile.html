@@ -102,7 +102,7 @@
       }
     });
 
-   function getUserNewsStats(userId) {
+  function getUserNewsStats(userId) {
   db.ref('news')
     .orderByChild('reporterName')  // Sort by reporterName field
     .equalTo(userId)  // Match the current user's ID
@@ -113,9 +113,9 @@
       if (snapshot.exists()) {
         snapshot.forEach(childSnapshot => {
           const newsData = childSnapshot.val();
-          console.log(newsData);  // Debugging statement to log news data
+          console.log('News Data:', newsData);  // Debug: log each news item
 
-          // Check if the news is published but not rejected
+          // Check if the news is published and not rejected
           if (newsData.published && !newsData.rejected) {
             publishedCount++;
           }
@@ -126,6 +126,7 @@
         });
 
         // Display the counts on the profile page
+        console.log(`Published: ${publishedCount}, Rejected: ${rejectedCount}`); // Debug the counts
         document.getElementById('publishedNewsCount').textContent = `Published News: ${publishedCount}`;
         document.getElementById('rejectedNewsCount').textContent = `Rejected News: ${rejectedCount}`;
       } else {

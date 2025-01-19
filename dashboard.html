@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mahabubabad Updates</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #004aad;
+      color: #fff;
+      padding: 20px 10%;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    nav {
+      background-color: #002f6c;
+      padding: 10px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      margin: 0 15px;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #ffd700;
+    }
+
+    .container {
+      padding: 20px 10%;
+    }
+
+    .news-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .news-item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .news-item:hover {
+      transform: scale(1.02);
+    }
+
+    .news-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .news-item .content {
+      padding: 15px;
+    }
+
+    .news-item h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .news-item p {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .news-item a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #004aad;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .news-item a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #002f6c;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 20px;
+    }
+
+    footer p {
+      font-size: 0.9rem;
+    }
+
+    .admin-panel {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-panel h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .admin-panel form {
+      display: grid;
+      gap: 15px;
+    }
+
+    .admin-panel form input,
+    .admin-panel form textarea,
+    .admin-panel form button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .admin-panel form button {
+      background-color: #004aad;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .admin-panel form button:hover {
+      background-color: #00337a;
+    }
+    select {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none; /* Removes default dropdown arrow for consistent styling */
+}
+
+select:focus {
+  border-color: #004aad;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 74, 173, 0.5);
+}
+
+select option {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+}
+
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Mahabubabad Updates</h1>
+    <p>Your Trusted Source for Local News</p>
+  </header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Latest News</a>
+    <a href="#">Categories</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <div class="container">
+    <!-- News List Section -->
+    <section class="news-list" id="news-list">
+      <!-- News items will be dynamically populated here -->
+    </section>
+
+    <!-- Admin Panel Section -->
+    <section class="admin-panel">
+      <h2>Admin Panel</h2>
+      <form id="newsForm">
+        <input type="text" id="newsTitle" placeholder="News Title" required>
+        <textarea rows="4" id="newsContent" placeholder="News Content" required></textarea>
+        <select id="newsLocation" required>
+          <option value="" disabled selected>Select Location</option>
+          <option value="Mahabubabad District">Mahabubabad</option>
+          <option value="mahabubabad Mandal">MHBD- Mandal</option>
+          <option value="Thorrur">Thorrur</option>
+          <option value="Garla">Garla</option>
+          <option value="Bayyaram">Bayyaram</option>
+          <option value="Guduru">Guduru</option>
+          <option value="kesamudram">Kesamudram</option>
+          <option value="pusapelli">Pusapelli</option>
+          <option value="nekkonda">Nekkonda</option>
+        </select>
+        <input type="file" id="newsImage" required>
+        <button type="submit">Publish News</button>
+      </form>
+      
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Mahabubabad Updates. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
+      authDomain: "uploadnewsapp.firebaseapp.com",
+      databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
+      projectId: "uploadnewsapp",
+      storageBucket: "uploadnewsapp.appspot.com",
+      messagingSenderId: "582380420692",
+      appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
+      measurementId: "G-Z5KPQ70JZ9"
+    };
+  
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+  
+   // Fetch Published or Unpublished News
+async function fetchNews(published = true) {
+  const newsList = document.getElementById('news-list');
+  newsList.innerHTML = '';
+  const snapshot = await db.ref('news').orderByChild('published').equalTo(published).once('value');
+  snapshot.forEach(childSnapshot => {
+    const data = childSnapshot.val();
+    const newsId = childSnapshot.key;
+    newsList.innerHTML += `
+      <div class="news-item">
+        <img src="${data.imageUrl}" alt="${data.title}">
+        <div class="content">
+          <h3>${data.title}</h3>
+          <p>${data.content}...</p>
+          <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
+          ${
+            published
+              ? `<button onclick="removeNews('${newsId}')">Remove</button>`
+              : `<button onclick="publishNews('${newsId}')">Publish</button>
+                 <button onclick="rejectNews('${newsId}')">Reject</button>`
+          }
+        </div>
+      </div>`;
+  });
+}
+
+// Publish News
+async function publishNews(newsId) {
+  await db.ref(`news/${newsId}`).update({ published: true });
+  alert('News Published Successfully!');
+  fetchNews(false); // Refresh Unpublished News
+}
+
+// Reject News
+async function rejectNews(newsId) {
+  if (confirm('Are you sure you want to reject this news? This action cannot be undone.')) {
+    await db.ref(`news/${newsId}`).remove();
+    alert('News Rejected and Removed Successfully!');
+    fetchNews(false); // Refresh Unpublished News
+  }
+}
+
+// Remove Published News
+async function removeNews(newsId) {
+  if (confirm('Are you sure you want to remove this published news? This action cannot be undone.')) {
+    await db.ref(`news/${newsId}`).remove();
+    alert('Published News Removed Successfully!');
+    fetchNews(true); // Refresh Published News
+  }
+}
+
+  
+    // Fetch Published News on Load
+    fetchNews();
+  
+    // Toggle Between Published and Unpublished News
+    let showUnpublished = false;
+    const toggleButton = document.createElement('button');
+    toggleButton.innerText = 'Show Unpublished News';
+    toggleButton.style.marginBottom = '20px';
+    toggleButton.style.backgroundColor='lightgreen';
+    toggleButton.style.padding='10px';
+    toggleButton.style.color='black';
+    toggleButton.style.fontStyle='bold';
+    toggleButton.onclick = () => {
+      showUnpublished = !showUnpublished;
+      toggleButton.innerText = showUnpublished ? 'Show Published News' : 'Show Unpublished News';
+      fetchNews(!showUnpublished);
+    };
+    document.querySelector('.container').insertBefore(toggleButton, document.getElementById('news-list'));
+  
+    // Publish News
+    async function publishNews(newsId) {
+      await db.ref(`news/${newsId}`).update({ published: true });
+      alert('News Published Successfully!');
+      fetchNews(false); // Refresh Unpublished News
+    }
+  
+    // Handle News Submission
+    document.getElementById('newsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('newsTitle').value;
+  const content = document.getElementById('newsContent').value;
+  const location = document.getElementById('newsLocation').value;
+  const file = document.getElementById('newsImage').files[0];
+
+  if (!location) {
+    alert('Please select a location.');
+    return;
+  }
+  
+      // Upload Image
+      const storageRef = storage.ref(`news-images/${file.name}`);
+  const snapshot = await storageRef.put(file);
+  const imageUrl = await snapshot.ref.getDownloadURL();
+  
+      // Add News to Realtime Database
+      const newsRef = db.ref('news').push();
+  await newsRef.set({
+    title,
+    content,
+    location,
+    imageUrl,
+    published: false, // Default to unpublished
+    updated_at: Date.now()
+  });
+
+  alert('News Added Successfully!');
+  e.target.reset();
+  if (!showUnpublished) fetchNews(); // Refresh Published News
+});
+  </script>
+  

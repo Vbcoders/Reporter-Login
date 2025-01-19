@@ -102,33 +102,37 @@
       }
     });
 
-    // Fetch and count published and rejected news for the current user
-    function getUserNewsStats(userId) {
-      db.ref('news')
-        .orderByChild('reporterName') // Sort by reporterName field
-        .equalTo(userId) // Match the current user's ID
-        .once('value', (snapshot) => {
-          let publishedCount = 0;
-          let rejectedCount = 0;
+   function getUserNewsStats(userId) {
+  db.ref('news')
+    .orderByChild('reporterName')  // Sort by reporterName field
+    .equalTo(userId)  // Match the current user's ID
+    .once('value', (snapshot) => {
+      let publishedCount = 0;
+      let rejectedCount = 0;
 
-          snapshot.forEach(childSnapshot => {
-            const newsData = childSnapshot.val();
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnapshot => {
+          const newsData = childSnapshot.val();
+          console.log(newsData);  // Debugging statement to log news data
 
-            // Check if the news is published but not rejected
-            if (newsData.published && !newsData.rejected) {
-              publishedCount++;
-            }
-            // Check if the news is rejected
-            if (newsData.rejected) {
-              rejectedCount++;
-            }
-          });
-
-          // Display the counts on the profile page
-          document.getElementById('publishedNewsCount').textContent = `Published News: ${publishedCount}`;
-          document.getElementById('rejectedNewsCount').textContent = `Rejected News: ${rejectedCount}`;
+          // Check if the news is published but not rejected
+          if (newsData.published && !newsData.rejected) {
+            publishedCount++;
+          }
+          // Check if the news is rejected
+          if (newsData.rejected) {
+            rejectedCount++;
+          }
         });
-    }
+
+        // Display the counts on the profile page
+        document.getElementById('publishedNewsCount').textContent = `Published News: ${publishedCount}`;
+        document.getElementById('rejectedNewsCount').textContent = `Rejected News: ${rejectedCount}`;
+      } else {
+        console.log('No news data found for this user');
+      }
+    });
+}
 
     // Log out
     function signOut() {

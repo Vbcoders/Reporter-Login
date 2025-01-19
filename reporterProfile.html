@@ -105,17 +105,20 @@
     // Fetch and count published and rejected news for the current user
     function getUserNewsStats(userId) {
       db.ref('news')
-        .orderByChild('reporterName')
-        .equalTo(userId)
+        .orderByChild('reporterName') // Sort by reporterName field
+        .equalTo(userId) // Match the current user's ID
         .once('value', (snapshot) => {
           let publishedCount = 0;
           let rejectedCount = 0;
 
           snapshot.forEach(childSnapshot => {
             const newsData = childSnapshot.val();
+
+            // Check if the news is published but not rejected
             if (newsData.published && !newsData.rejected) {
               publishedCount++;
             }
+            // Check if the news is rejected
             if (newsData.rejected) {
               rejectedCount++;
             }

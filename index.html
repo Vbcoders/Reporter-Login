@@ -3,152 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Reporter Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>Login - Mahabubabad Updates</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      line-height: 1.6;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      background-color: #f1f1f1;
     }
-
     .login-container {
       background-color: #fff;
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .login-container h1 {
       text-align: center;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h1 {
-      font-size: 1.8rem;
       margin-bottom: 20px;
-      color: #004aad;
     }
-
-    input {
+    .login-container button {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      font-size: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #004aad;
-      color: #fff;
-      font-size: 1rem;
+      background-color: #4285F4;
+      color: white;
       border: none;
       border-radius: 5px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
-
-    button:hover {
-      background-color: #00337a;
-    }
-
-    .otp-input {
-      display: none;
-    }
-
-    .error {
-      color: red;
-      font-size: 0.9rem;
-      margin-top: 10px;
+    .login-container button:hover {
+      background-color: #357ae8;
     }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
   <div class="login-container">
     <h1>Reporter Login</h1>
-    <form id="loginForm">
-      <input type="text" id="phoneNumber" placeholder="Enter your phone number" required>
-      <div id="recaptcha-container"></div>
-      <button type="button" id="sendOtpButton">Send OTP</button>
-      <div class="otp-input">
-        <input type="text" id="otp" placeholder="Enter OTP" required>
-        <button type="button" id="verifyOtpButton">Verify OTP</button>
-      </div>
-      <p class="error" id="error-message"></p>
-    </form>
+    <button id="googleSignInBtn">Sign in with Google</button>
   </div>
 
   <script>
-  const firebaseConfig = {
-  apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
-  authDomain: "uploadnewsapp.firebaseapp.com",
-  databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
-  projectId: "uploadnewsapp",
-  storageBucket: "uploadnewsapp.appspot.com",
-  messagingSenderId: "582380420692",
-  appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
-  measurementId: "G-Z5KPQ70JZ9"
-};
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
+      authDomain: "uploadnewsapp.firebaseapp.com",
+      databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
+      projectId: "uploadnewsapp",
+      storageBucket: "uploadnewsapp.appspot.com",
+      messagingSenderId: "582380420692",
+      appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
+      measurementId: "G-Z5KPQ70JZ9"
+    };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-
     const auth = firebase.auth();
-    const db = firebase.database();
-    const messaging = firebase.messaging();
 
-    let confirmationResult;
+    // Google Sign-In handler
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-    // Initialize ReCAPTCHA
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-  size: 'normal',
-  callback: () => {
-    console.log('ReCAPTCHA verified');
-  },
-});
-
-
-    document.getElementById('sendOtpButton').addEventListener('click', async () => {
-      const phoneNumber = document.getElementById('phoneNumber').value;
-      if (!phoneNumber) return alert('Please enter a valid phone number');
-      try {
-        confirmationResult = await auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
-        document.querySelector('.otp-input').style.display = 'block';
-        alert('OTP sent successfully!');
-      } catch (error) {
-        document.getElementById('error-message').innerText = error.message;
-      }
-    });
-
-    document.getElementById('verifyOtpButton').addEventListener('click', async () => {
-      const otp = document.getElementById('otp').value;
-      if (!otp) return alert('Please enter the OTP');
-      try {
-        const result = await confirmationResult.confirm(otp);
-        const user = result.user;
-
-        // Store FCM Token
-        const token = await messaging.getToken();
-        db.ref(`reporters/${user.uid}`).set({
-          phoneNumber: user.phoneNumber,
-          fcmToken: token,
+    document.getElementById('googleSignInBtn').addEventListener('click', () => {
+      auth.signInWithPopup(googleProvider)
+        .then((result) => {
+          // User successfully signed in
+          const user = result.user;
+          console.log('User Info:', user);
+          alert('Welcome, ' + user.displayName);
+          // Redirect to main page after login
+          window.location.href = 'main_page.html'; // Change to your main page
+        })
+        .catch((error) => {
+          console.error('Error during sign in:', error);
+          alert('Failed to sign in: ' + error.message);
         });
-
-        alert('Login successful!');
-        window.location.href = 'news_page.html'; // Redirect to the news page
-      } catch (error) {
-        document.getElementById('error-message').innerText = error.message;
-      }
     });
   </script>
 </body>

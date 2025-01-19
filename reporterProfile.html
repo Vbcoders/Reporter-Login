@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .profile-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .profile-container img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+    .profile-container p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .logout-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <h2>User Profile</h2>
+    <img id="userPhoto" src="" alt="User Photo">
+    <p id="userName">Name: </p>
+    <p id="userEmail">Email: </p>
+    <button class="logout-btn" onclick="signOut()">Log Out</button>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
+      authDomain: "uploadnewsapp.firebaseapp.com",
+      databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
+      projectId: "uploadnewsapp",
+      storageBucket: "uploadnewsapp.appspot.com",
+      messagingSenderId: "582380420692",
+      appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
+      measurementId: "G-Z5KPQ70JZ9"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Get current user
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Display user information
+        document.getElementById('userPhoto').src = user.photoURL;
+        document.getElementById('userName').textContent = 'Name: ' + user.displayName;
+        document.getElementById('userEmail').textContent = 'Email: ' + user.email;
+      } else {
+        // Redirect to login if not signed in
+        window.location.href = 'login_page.html'; // Change to your login page
+      }
+    });
+
+    // Log out
+    function signOut() {
+      auth.signOut().then(() => {
+        window.location.href = 'login_page.html'; // Redirect to login page
+      }).catch((error) => {
+        alert('Error logging out: ' + error.message);
+      });
+    }
+  </script>
+</body>
+</html>

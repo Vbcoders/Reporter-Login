@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mahabubabad Updates</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-   <style>
+ <style>
     * {
       margin: 0;
       padding: 0;
@@ -300,8 +300,9 @@
               </div>
               ${
                 showUnpublished
-                  ? `<button onclick="publishNews('${newsId}')">Publish</button>`
-                  : ''
+                  ? `<button onclick="publishNews('${newsId}')">Publish</button>
+                     <button onclick="rejectNews('${newsId}')">Reject</button>`
+                  : `<button onclick="removeNews('${newsId}')">Remove</button>`
               }
             </div>
           </div>
@@ -359,6 +360,22 @@
       const newsRef = db.ref(`news/${newsId}`);
       await newsRef.update({ published: true, updated_at: firebase.database.ServerValue.TIMESTAMP });
       alert('News has been published!');
+      fetchNews();  // Refresh the news list
+    }
+
+    // Reject News (set rejected flag)
+    async function rejectNews(newsId) {
+      const newsRef = db.ref(`news/${newsId}`);
+      await newsRef.update({ rejected: true, updated_at: firebase.database.ServerValue.TIMESTAMP });
+      alert('News has been rejected!');
+      fetchNews();  // Refresh the news list
+    }
+
+    // Remove News
+    async function removeNews(newsId) {
+      const newsRef = db.ref(`news/${newsId}`);
+      await newsRef.remove();
+      alert('News has been removed!');
       fetchNews();  // Refresh the news list
     }
 

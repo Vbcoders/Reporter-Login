@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mahabubabad Updates</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
+ <style>
     * {
       margin: 0;
       padding: 0;
@@ -189,7 +189,8 @@
   </style>
 </head>
 <body>
-  <header>
+  <!-- Same body structure as before -->
+<header>
     <h1>Mahabubabad Updates</h1>
     <p>Your Trusted Source for Local News</p>
   </header>
@@ -232,130 +233,176 @@
   <footer>
     <p>&copy; 2025 Mahabubabad Updates. All Rights Reserved.</p>
   </footer>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
-      authDomain: "uploadnewsapp.firebaseapp.com",
-      databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
-      projectId: "uploadnewsapp",
-      storageBucket: "uploadnewsapp.appspot.com",
-      messagingSenderId: "582380420692",
-      appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
-      measurementId: "G-Z5KPQ70JZ9"
-    };
+ <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDJrOF5heJBnrXh2rmoa2Tto5H9d9mfJUQ",
+    authDomain: "uploadnewsapp.firebaseapp.com",
+    databaseURL: "https://uploadnewsapp-default-rtdb.firebaseio.com",
+    projectId: "uploadnewsapp",
+    storageBucket: "uploadnewsapp.appspot.com",
+    messagingSenderId: "582380420692",
+    appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
+    measurementId: "G-Z5KPQ70JZ9"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-    const storage = firebase.storage();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  const storage = firebase.storage();
 
-    // Check User and Show Toggle Only for "Vikas Prince"
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        const userName = user.displayName; // Get the logged-in user's name
-        if (userName === 'Vikas Prince') {
-          const toggleButton = document.createElement('button');
-          toggleButton.innerText = 'Show Unpublished News';
-          toggleButton.style.marginBottom = '20px';
-          toggleButton.style.backgroundColor = 'lightgreen';
-          toggleButton.style.padding = '10px';
-          toggleButton.style.color = 'black';
-          toggleButton.style.fontStyle = 'bold';
-          toggleButton.onclick = () => {
-            showUnpublished = !showUnpublished;
-            toggleButton.innerText = showUnpublished ? 'Show Published News' : 'Show Unpublished News';
-            fetchNews(!showUnpublished);
-          };
-          document.querySelector('.container').insertBefore(toggleButton, document.getElementById('news-list'));
-        }
+  let showUnpublished = false;
+
+  // Check User and Show Toggle Only for "Vikas Prince"
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      const userName = user.displayName;
+      if (userName === 'Vikas Prince') {
+        const toggleButton = document.createElement('button');
+        toggleButton.innerText = 'Show Unpublished News';
+        toggleButton.style.marginBottom = '20px';
+        toggleButton.style.backgroundColor = 'lightgreen';
+        toggleButton.style.padding = '10px';
+        toggleButton.style.color = 'black';
+        toggleButton.style.fontWeight = 'bold';
+        toggleButton.onclick = () => {
+          showUnpublished = !showUnpublished;
+          toggleButton.innerText = showUnpublished ? 'Show Published News' : 'Show Unpublished News';
+          fetchNews();
+        };
+        document.querySelector('.container').insertBefore(toggleButton, document.getElementById('news-list'));
       }
-    });
+    }
+  });
 
-    // Fetch Published or Unpublished News
-    async function fetchNews(published = true) {
-      const newsList = document.getElementById('news-list');
-      newsList.innerHTML = '';
-      const snapshot = await db.ref('news').orderByChild('published').equalTo(published).once('value');
-      snapshot.forEach(childSnapshot => {
-        const data = childSnapshot.val();
-        const newsId = childSnapshot.key;
-        newsList.innerHTML += `
-          <div class="news-item">
-            <img src="${data.imageUrl}" alt="${data.title}">
-            <div class="content">
-              <h3>${data.title}</h3>
-              <p>${data.content}...</p>
-              <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
-              <div class="reporter-info">
-                <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                <span>by ${data.reporterName}</span>
-              </div>
-              ${
-                published
-                  ? ''
-                  : `<button onclick="publishNews('${newsId}')">Publish</button>`
-              }
-            </div>
+  // Fetch Published or Unpublished News
+// Fetch Published or Unpublished News
+async function fetchNews() {
+  const newsList = document.getElementById('news-list');
+  newsList.innerHTML = '';
+
+  // Fetch news and filter out rejected news
+  const snapshot = await db.ref('news')
+    .orderByChild('published')
+    .equalTo(showUnpublished ? false : true)
+    .once('value');
+
+  snapshot.forEach(childSnapshot => {
+    const data = childSnapshot.val();
+    const newsId = childSnapshot.key;
+
+    // Skip rejected news
+    if (data.rejected) {
+      return;  // Skip adding this news to the list
+    }
+
+    newsList.innerHTML += 
+      <div class="news-item">
+        <img src="${data.imageUrl}" alt="${data.title}">
+        <div class="content">
+          <h3>${data.title}</h3>
+          <p>${data.content}...</p>
+          <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
+          <div class="reporter-info">
+            <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+            <span>by ${data.reporterName}</span>
           </div>
-        `;
-      });
+          ${
+            showUnpublished
+              ? <button onclick="publishNews('${newsId}')">Publish</button>
+                 <button onclick="rejectNews('${newsId}')">Reject</button>
+              : <button onclick="removeNews('${newsId}')">Remove</button>
+          }
+        </div>
+      </div>
+    ;
+  });
+}
+
+  // Handle News Submission
+  document.getElementById('newsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) {
+      alert('You must be logged in to submit news.');
+      return;
     }
 
-    // Handle News Submission
-    document.getElementById('newsForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('newsTitle').value;
-      const content = document.getElementById('newsContent').value;
-      const location = document.getElementById('newsLocation').value;
-      const file = document.getElementById('newsImage').files[0];
+    const title = document.getElementById('newsTitle').value;
+    const content = document.getElementById('newsContent').value;
+    const location = document.getElementById('newsLocation').value;
+    const file = document.getElementById('newsImage').files[0];
 
-      if (!location) {
-        alert('Please select a location.');
-        return;
-      }
-
-      // Upload Image
-      const storageRef = storage.ref(`news-images/${file.name}`);
-      const snapshot = await storageRef.put(file);
-      const imageUrl = await snapshot.ref.getDownloadURL();
-
-            // Add News to Realtime Database
-            const newsRef = db.ref('news').push();
-      const newsData = {
-        title,
-        content,
-        location,
-        imageUrl,
-        published: false, // Initially, the news is unpublished
-        created_at: firebase.database.ServerValue.TIMESTAMP,
-        updated_at: firebase.database.ServerValue.TIMESTAMP,
-        reporterName: user.displayName,
-        reporterProfilePic: user.photoURL || 'default-profile-pic-url'
-      };
-      
-      await newsRef.set(newsData);
-      alert('News has been submitted successfully!');
-      
-      // Clear form
-      document.getElementById('newsForm').reset();
-    });
-
-    // Publish News
-    async function publishNews(newsId) {
-      const newsRef = db.ref(`news/${newsId}`);
-      await newsRef.update({ published: true, updated_at: firebase.database.ServerValue.TIMESTAMP });
-      alert('News has been published!');
-      fetchNews();  // Refresh the news list
+    if (!location) {
+      alert('Please select a location.');
+      return;
     }
 
-    // Initially, load the published news by default
-    fetchNews(true);
-  </script>
+    // Upload Image
+    const storageRef = storage.ref(news-images/${file.name});
+    const snapshot = await storageRef.put(file);
+    const imageUrl = await snapshot.ref.getDownloadURL();
+
+    // Add News to Realtime Database
+    const newsRef = db.ref('news').push();
+    const newsData = {
+      title,
+      content,
+      location,
+      imageUrl,
+      published: false, // Initially, the news is unpublished
+      created_at: firebase.database.ServerValue.TIMESTAMP,
+      updated_at: firebase.database.ServerValue.TIMESTAMP,
+      reporterName: user.displayName,
+      reporterProfilePic: user.photoURL || 'default-profile-pic-url'
+    };
+    await newsRef.set(newsData);
+    alert('News has been submitted successfully!');
+    
+    // Clear form
+    document.getElementById('newsForm').reset();
+    fetchNews();  // Refresh news list after submitting
+  });
+
+  // Publish News
+  async function publishNews(newsId) {
+    const newsRef = db.ref(news/${newsId});
+    await newsRef.update({ published: true, updated_at: firebase.database.ServerValue.TIMESTAMP });
+    alert('News has been published!');
+    fetchNews();  // Refresh the news list
+  }
+
+  // Reject News (mark as rejected and remove from Firebase)
+  // Reject News (mark as rejected without removing from Firebase)
+async function rejectNews(newsId) {
+  const newsRef = db.ref(news/${newsId});
+
+  // Mark the news as rejected and unpublished
+  await newsRef.update({
+    rejected: true,
+    published: false,
+    updated_at: firebase.database.ServerValue.TIMESTAMP,
+  });
+  
+  alert('News has been rejected!');
+  fetchNews();  // Refresh the news list
+}
+
+  // Remove News (Remove published news)
+  async function removeNews(newsId) {
+    const newsRef = db.ref(news/${newsId});
+    await newsRef.remove();
+    alert('News has been removed!');
+    fetchNews();  // Refresh the news list
+  }
+
+  // Initially, load the published news by default
+  fetchNews();
+</script>
+
 </body>
 </html>

@@ -95,7 +95,7 @@
         document.getElementById('userEmail').textContent = 'Email: ' + user.email;
 
         // Fetch and display news statistics
-        getUserNewsStats(user.uid);
+        getUserNewsStats(user.displayName);
       } else {
         // Redirect to login if not signed in
         window.location.href = 'login_page.html'; // Change to your login page
@@ -105,7 +105,7 @@
  function getUserNewsStats(userId) {
   db.ref('news')
     .orderByChild('reporterName')
-    .equalTo(user.displayName)  // Ensure this is the actual UID of the current user
+    .equalTo(userId)  // Ensure this is the actual UID of the current user
     .once('value', (snapshot) => {
       if (snapshot.exists()) {
         console.log('Data fetched for user:', snapshot.val()); // Log the entire fetched data

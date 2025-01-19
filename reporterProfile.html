@@ -107,12 +107,10 @@
 
     .published {
       background-color: #27ae60;
-      color: white;
     }
 
     .rejected {
       background-color: #e74c3c;
-      color: white;
     }
 
     .news-stat i {
@@ -157,7 +155,12 @@
       padding: 15px;
       font-size: 14px;
     }
-
+  #publishedNewsCount{
+   color: white;
+     }
+     #rejectedNewsCount{
+        color: white;
+     }
   </style>
 </head>
 <body>
@@ -220,7 +223,8 @@
         getUserNewsStats(user.displayName);
       } else {
         // Redirect to login if not signed in
-        window.location.href = 'login.html'; // Change to your login page
+        window.location.href = 'login.html';
+       // Change to your login page
       }
     });
 

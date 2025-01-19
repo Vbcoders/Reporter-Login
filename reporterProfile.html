@@ -217,7 +217,7 @@
         document.getElementById('userEmail').textContent = 'Email: ' + user.email;
 
         // Fetch and display news statistics
-        getUserNewsStats(user.uid);
+        getUserNewsStats(user.displayName);
       } else {
         // Redirect to login if not signed in
         window.location.href = 'login.html'; // Change to your login page

@@ -6,48 +6,233 @@
   <title>Mahabubabad Updates</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Styles for layout and buttons */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Roboto', sans-serif; background-color: #f4f4f9; color: #333; }
-    header { background-color: #004aad; color: #fff; padding: 20px 10%; text-align: center; }
-    header h1 { font-size: 2.5rem; }
-    nav { background-color: #002f6c; padding: 10px 10%; display: flex; justify-content: space-between; }
-    nav a { color: #fff; text-decoration: none; font-size: 1rem; margin: 0 15px; }
-    .container { padding: 20px 10%; }
-    .news-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-    .news-item { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-    .news-item img { width: 100%; height: 200px; object-fit: cover; }
-    .news-item .content { padding: 15px; }
-    .news-item h3 { font-size: 1.2rem; margin-bottom: 10px; }
-    .news-item p { font-size: 0.9rem; color: #555; }
-    .news-item button { margin-top: 10px; padding: 10px; color: white; background-color: #004aad; border: none; border-radius: 5px; cursor: pointer; }
-    footer { background-color: #002f6c; color: #fff; text-align: center; padding: 10px 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #004aad;
+      color: #fff;
+      padding: 20px 10%;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    nav {
+      background-color: #002f6c;
+      padding: 10px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      margin: 0 15px;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #ffd700;
+    }
+
+    .container {
+      padding: 20px 10%;
+    }
+
+    .news-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .news-item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .news-item:hover {
+      transform: scale(1.02);
+    }
+
+    .news-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .news-item .content {
+      padding: 15px;
+    }
+
+    .news-item h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .news-item p {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .news-item a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #004aad;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .news-item a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #002f6c;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 20px;
+    }
+
+    footer p {
+      font-size: 0.9rem;
+    }
+
+    .admin-panel {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-panel h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .admin-panel form {
+      display: grid;
+      gap: 15px;
+    }
+
+    .admin-panel form input,
+    .admin-panel form textarea,
+    .admin-panel form button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .admin-panel form button {
+      background-color: #004aad;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .admin-panel form button:hover {
+      background-color: #00337a;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #333;
+      cursor: pointer;
+      appearance: none;
+    }
+
+    select:focus {
+      border-color: #004aad;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 74, 173, 0.5);
+    }
+
+    select option {
+      padding: 10px;
+      font-size: 1rem;
+      background-color: #fff;
+      color: #333;
+    }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header>
     <h1>Mahabubabad Updates</h1>
     <p>Your Trusted Source for Local News</p>
   </header>
 
-  <!-- Navigation -->
   <nav>
     <a href="#">Home</a>
     <a href="reporterProfile.html">Profile</a>
   </nav>
 
-  <!-- News Section -->
   <div class="container">
-    <section class="news-list" id="news-list"></section>
+    <!-- News List Section -->
+    <section class="news-list" id="news-list">
+      <!-- News items will be dynamically populated here -->
+    </section>
+
+    <!-- Admin Panel Section -->
+    <section class="admin-panel">
+      <h2>Admin Panel</h2>
+      <form id="newsForm">
+        <input type="text" id="newsTitle" placeholder="News Title" required>
+        <textarea rows="4" id="newsContent" placeholder="News Content" required></textarea>
+        <select id="newsLocation" required>
+          <option value="" disabled selected>Select Location</option>
+          <option value="Mahabubabad District">Mahabubabad</option>
+          <option value="mahabubabad Mandal">MHBD- Mandal</option>
+          <option value="Thorrur">Thorrur</option>
+          <option value="Garla">Garla</option>
+          <option value="Bayyaram">Bayyaram</option>
+          <option value="Guduru">Guduru</option>
+          <option value="kesamudram">Kesamudram</option>
+          <option value="pusapelli">Pusapelli</option>
+          <option value="nekkonda">Nekkonda</option>
+        </select>
+        <input type="file" id="newsImage" required>
+        <button type="submit">Publish News</button>
+      </form>
+    </section>
   </div>
 
-  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Mahabubabad Updates. All Rights Reserved.</p>
   </footer>
 
-  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -64,17 +249,16 @@
       appId: "1:582380420692:web:bf476455fe2a4189d7f7c1",
       measurementId: "G-Z5KPQ70JZ9"
     };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
     const storage = firebase.storage();
 
-    let showUnpublished = false;
-
-    // Check User and Allow Toggle for "Vikas Prince"
+    // Check User and Show Toggle Only for "Vikas Prince"
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const userName = user.displayName;
+        const userName = user.displayName; // Get the logged-in user's name
         if (userName === 'Vikas Prince') {
           const toggleButton = document.createElement('button');
           toggleButton.innerText = 'Show Unpublished News';
@@ -82,11 +266,11 @@
           toggleButton.style.backgroundColor = 'lightgreen';
           toggleButton.style.padding = '10px';
           toggleButton.style.color = 'black';
-          toggleButton.style.fontWeight = 'bold';
+          toggleButton.style.fontStyle = 'bold';
           toggleButton.onclick = () => {
             showUnpublished = !showUnpublished;
             toggleButton.innerText = showUnpublished ? 'Show Published News' : 'Show Unpublished News';
-            fetchNews();
+            fetchNews(!showUnpublished);
           };
           document.querySelector('.container').insertBefore(toggleButton, document.getElementById('news-list'));
         }
@@ -94,25 +278,13 @@
     });
 
     // Fetch Published or Unpublished News
-    async function fetchNews() {
+    async function fetchNews(published = true) {
       const newsList = document.getElementById('news-list');
       newsList.innerHTML = '';
-
-      // Fetch news and filter out rejected news
-      const snapshot = await db.ref('news')
-        .orderByChild('published')
-        .equalTo(showUnpublished ? false : true)
-        .once('value');
-
+      const snapshot = await db.ref('news').orderByChild('published').equalTo(published).once('value');
       snapshot.forEach(childSnapshot => {
         const data = childSnapshot.val();
         const newsId = childSnapshot.key;
-
-        // Skip rejected news
-        if (data.rejected) {
-          return;  // Skip adding this news to the list
-        }
-
         newsList.innerHTML += `
           <div class="news-item">
             <img src="${data.imageUrl}" alt="${data.title}">
@@ -125,10 +297,9 @@
                 <span>by ${data.reporterName}</span>
               </div>
               ${
-                showUnpublished
-                  ? `<button onclick="publishNews('${newsId}')">Publish</button>
-                     <button onclick="rejectNews('${newsId}')">Reject</button>`
-                  : `<button onclick="removeNews('${newsId}')">Remove from Published</button>`
+                published
+                  ? ''
+                  : `<button onclick="publishNews('${newsId}')">Publish</button>`
               }
             </div>
           </div>
@@ -136,32 +307,55 @@
       });
     }
 
+    // Handle News Submission
+    document.getElementById('newsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('newsTitle').value;
+      const content = document.getElementById('newsContent').value;
+      const location = document.getElementById('newsLocation').value;
+      const file = document.getElementById('newsImage').files[0];
+
+      if (!location) {
+        alert('Please select a location.');
+        return;
+      }
+
+      // Upload Image
+      const storageRef = storage.ref(`news-images/${file.name}`);
+      const snapshot = await storageRef.put(file);
+      const imageUrl = await snapshot.ref.getDownloadURL();
+
+            // Add News to Realtime Database
+            const newsRef = db.ref('news').push();
+      const newsData = {
+        title,
+        content,
+        location,
+        imageUrl,
+        published: false, // Initially, the news is unpublished
+        created_at: firebase.database.ServerValue.TIMESTAMP,
+        updated_at: firebase.database.ServerValue.TIMESTAMP,
+        reporterName: user.displayName,
+        reporterProfilePic: user.photoURL || 'default-profile-pic-url'
+      };
+      
+      await newsRef.set(newsData);
+      alert('News has been submitted successfully!');
+      
+      // Clear form
+      document.getElementById('newsForm').reset();
+    });
+
     // Publish News
     async function publishNews(newsId) {
       const newsRef = db.ref(`news/${newsId}`);
       await newsRef.update({ published: true, updated_at: firebase.database.ServerValue.TIMESTAMP });
       alert('News has been published!');
-      fetchNews();
-    }
-
-    // Reject News
-    async function rejectNews(newsId) {
-      const newsRef = db.ref(`news/${newsId}`);
-      await newsRef.update({ rejected: true, published: false, updated_at: firebase.database.ServerValue.TIMESTAMP });
-      alert('News has been rejected!');
-      fetchNews();
-    }
-
-    // Remove News
-    async function removeNews(newsId) {
-      const newsRef = db.ref(`news/${newsId}`);
-      await newsRef.remove();
-      alert('News has been removed!');
-      fetchNews();
+      fetchNews();  // Refresh the news list
     }
 
     // Initially, load the published news by default
-    fetchNews();
+    fetchNews(true);
   </script>
 </body>
 </html>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mahabubabad Updates</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
+   <style>
     * {
       margin: 0;
       padding: 0;
@@ -189,7 +189,8 @@
   </style>
 </head>
 <body>
-  <header>
+  <!-- Same body structure as before -->
+<header>
     <h1>Mahabubabad Updates</h1>
     <p>Your Trusted Source for Local News</p>
   </header>
@@ -232,7 +233,6 @@
   <footer>
     <p>&copy; 2025 Mahabubabad Updates. All Rights Reserved.</p>
   </footer>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -255,10 +255,12 @@
     const db = firebase.database();
     const storage = firebase.storage();
 
+    let showUnpublished = false;
+
     // Check User and Show Toggle Only for "Vikas Prince"
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const userName = user.displayName; // Get the logged-in user's name
+        const userName = user.displayName;
         if (userName === 'Vikas Prince') {
           const toggleButton = document.createElement('button');
           toggleButton.innerText = 'Show Unpublished News';
@@ -266,11 +268,11 @@
           toggleButton.style.backgroundColor = 'lightgreen';
           toggleButton.style.padding = '10px';
           toggleButton.style.color = 'black';
-          toggleButton.style.fontStyle = 'bold';
+          toggleButton.style.fontWeight = 'bold';
           toggleButton.onclick = () => {
             showUnpublished = !showUnpublished;
             toggleButton.innerText = showUnpublished ? 'Show Published News' : 'Show Unpublished News';
-            fetchNews(!showUnpublished);
+            fetchNews();
           };
           document.querySelector('.container').insertBefore(toggleButton, document.getElementById('news-list'));
         }
@@ -278,10 +280,10 @@
     });
 
     // Fetch Published or Unpublished News
-    async function fetchNews(published = true) {
+    async function fetchNews() {
       const newsList = document.getElementById('news-list');
       newsList.innerHTML = '';
-      const snapshot = await db.ref('news').orderByChild('published').equalTo(published).once('value');
+      const snapshot = await db.ref('news').orderByChild('published').equalTo(showUnpublished ? false : true).once('value');
       snapshot.forEach(childSnapshot => {
         const data = childSnapshot.val();
         const newsId = childSnapshot.key;
@@ -297,9 +299,9 @@
                 <span>by ${data.reporterName}</span>
               </div>
               ${
-                published
-                  ? ''
-                  : `<button onclick="publishNews('${newsId}')">Publish</button>`
+                showUnpublished
+                  ? `<button onclick="publishNews('${newsId}')">Publish</button>`
+                  : ''
               }
             </div>
           </div>
@@ -310,11 +312,12 @@
     // Handle News Submission
     document.getElementById('newsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-       const user = auth.currentUser;
-       if (!user) {
-    alert('You must be logged in to submit news.');
-    return;
-  }
+      const user = auth.currentUser;
+      if (!user) {
+        alert('You must be logged in to submit news.');
+        return;
+      }
+
       const title = document.getElementById('newsTitle').value;
       const content = document.getElementById('newsContent').value;
       const location = document.getElementById('newsLocation').value;
@@ -330,8 +333,8 @@
       const snapshot = await storageRef.put(file);
       const imageUrl = await snapshot.ref.getDownloadURL();
 
-            // Add News to Realtime Database
-            const newsRef = db.ref('news').push();
+      // Add News to Realtime Database
+      const newsRef = db.ref('news').push();
       const newsData = {
         title,
         content,
@@ -343,12 +346,12 @@
         reporterName: user.displayName,
         reporterProfilePic: user.photoURL || 'default-profile-pic-url'
       };
-      
       await newsRef.set(newsData);
       alert('News has been submitted successfully!');
       
       // Clear form
       document.getElementById('newsForm').reset();
+      fetchNews();  // Refresh news list after submitting
     });
 
     // Publish News
@@ -360,7 +363,7 @@
     }
 
     // Initially, load the published news by default
-    fetchNews(true);
+    fetchNews();
   </script>
 </body>
 </html>

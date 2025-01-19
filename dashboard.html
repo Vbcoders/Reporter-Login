@@ -124,45 +124,59 @@
     });
 
     // Fetch and display news
-    async function fetchNews() {
-      const newsList = document.getElementById('news-list');
-      newsList.innerHTML = '';
+   <script>
+  async function fetchNews() {
+    const newsList = document.getElementById('news-list');
+    newsList.innerHTML = '';
 
-      const snapshot = await db.ref('news')
-        .orderByChild('published')
-        .equalTo(showUnpublished ? false : true)
-        .once('value');
+    const user = auth.currentUser;
+    const userName = user ? user.displayName : null;
 
-      snapshot.forEach(childSnapshot => {
-        const data = childSnapshot.val();
-        const newsId = childSnapshot.key;
+    const snapshot = await db.ref('news')
+      .orderByChild('published')
+      .equalTo(showUnpublished ? false : true)
+      .once('value');
 
-        // Skip rejected news
-        if (data.rejected) return;
+    snapshot.forEach(childSnapshot => {
+      const data = childSnapshot.val();
+      const newsId = childSnapshot.key;
 
-        newsList.innerHTML += `
-          <div class="news-item">
-            <img src="${data.imageUrl}" alt="${data.title}">
-            <div class="content">
-              <h3>${data.title}</h3>
-              <p>${data.content}...</p>
-              <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
-              <div class="reporter-info">
-                <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                <span>by ${data.reporterName}</span>
-              </div>
-              ${
-                showUnpublished
-                  ? `<button onclick="publishNews('${newsId}')">Publish</button>
-                     <button onclick="rejectNews('${newsId}')">Reject</button>`
-                  : `<button onclick="removeNews('${newsId}')">Remove</button>`
-              }
-            </div>
-          </div>
+      // Skip rejected news
+      if (data.rejected) {
+        return;  // Skip adding this news to the list
+      }
+
+      let removeButton = '';
+      if (showUnpublished) {
+        // Only show the publish and reject buttons for unpublished news
+        removeButton = `
+          <button onclick="publishNews('${newsId}')">Publish</button>
+          <button onclick="rejectNews('${newsId}')">Reject</button>
         `;
-      });
-    }
+      } else {
+        // For published news, show "Remove" only if the current user is the reporter or Vikas Prince
+        if (data.reporterName === userName || userName === 'Vikas Prince') {
+          removeButton = `<button onclick="removeNews('${newsId}')">Remove</button>`;
+        }
+      }
 
+      newsList.innerHTML += `
+        <div class="news-item">
+          <img src="${data.imageUrl}" alt="${data.title}">
+          <div class="content">
+            <h3>${data.title}</h3>
+            <p>${data.content}...</p>
+            <small>Location: ${data.location} | Updated: ${new Date(data.updated_at).toLocaleString()}</small>
+            <div class="reporter-info">
+              <img src="${data.reporterProfilePic}" alt="${data.reporterName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+              <span>by ${data.reporterName}</span>
+            </div>
+            ${removeButton}
+          </div>
+        </div>
+      `;
+    });
+  }
     // Handle news submission
     document.getElementById('newsForm').addEventListener('submit', async (e) => {
       e.preventDefault();
